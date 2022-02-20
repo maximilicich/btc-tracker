@@ -2,8 +2,8 @@ package ar.com.wnc.btctracker.api.rest;
 
 import ar.com.wnc.btctracker.domain.BitcoinPrice;
 import ar.com.wnc.btctracker.exception.DataFormatException;
-import ar.com.wnc.btctracker.service.BitcoinService;
 import ar.com.wnc.btctracker.exception.ResourceNotFoundException;
+import ar.com.wnc.btctracker.service.BitcoinService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /*
  * Demonstrates how to set up RESTful API endpoints using Spring MVC
@@ -59,31 +57,22 @@ public class BitcoinController extends AbstractRestHandler {
     }
 
 
-    @RequestMapping(value = "",
+    @RequestMapping(value = "/stats",
             method = RequestMethod.GET,
             produces = {"application/json", "application/xml"})
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Get a list of all bitcoins.", notes = "Notas adicionales")
     public
     @ResponseBody
-    ResponseEntity getAllBitcoins(@RequestParam String from, @RequestParam String to,
-                                  HttpServletRequest request, HttpServletResponse response) {
+    ResponseEntity getBitcoinStats(@RequestParam(name="ts_from") String from,
+                                   @RequestParam(name="ts_to") String to,
+                                   HttpServletRequest request, HttpServletResponse response) {
 
         Date dFrom = stringToDate(from);
         Date dTo = stringToDate(to);
 
-        Iterable<BitcoinPrice> iterable = this.bitcoinService.getAllBitcoinPrices();
-
-        Double result =
-                StreamSupport.stream(iterable.spliterator(), false)
-                        .collect(Collectors.toList()).stream()
-                        .filter(p -> p.getTs().after(dFrom) && p.getTs().before(dTo))
-                        .mapToDouble(BitcoinPrice::getPrice)
-                        .average()
-                        .orElse(Double.NaN);
-
         return ResponseEntity.status(HttpStatus.OK)
-                .body(result);
+                .body(this.bitcoinService.getBitcoinPriceStats(dFrom, dTo));
 
     }
 

@@ -2,6 +2,7 @@ package ar.com.wnc.btctracker.service;
 
 import ar.com.wnc.btctracker.dao.jpa.BitcoinRepository;
 import ar.com.wnc.btctracker.domain.BitcoinPrice;
+import ar.com.wnc.btctracker.domain.BitcoinPriceStats;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,31 @@ public class BitcoinService {
         return allPrices.stream()
                         .filter(p -> ! p.getTs().after(ts))
                         .reduce((a, b) -> b);   // reduce((a,b)->b) devuelve el ultimo elemento
+
+    }
+
+    public BitcoinPriceStats getBitcoinPriceStats(Date from, Date to) {
+
+        List<BitcoinPrice> allBitcoinPrices = bitcoinRepository.findAll();
+
+        Double maxPrice = allBitcoinPrices.stream()
+                .mapToDouble(BitcoinPrice::getPrice)
+                .max()
+                .orElse(Double.NaN);
+
+        Double avgPriceFromTo = allBitcoinPrices.stream()
+                .filter(p -> p.getTs().after(from) && p.getTs().before(to))
+                .mapToDouble(BitcoinPrice::getPrice)
+                .average()
+                .orElse(Double.NaN);
+
+        BitcoinPriceStats stats = new BitcoinPriceStats();
+        stats.setTimestampFrom(from);
+        stats.setTimestampTo(to);
+        stats.setMaxPrice(maxPrice);
+        stats.setAvgPrice(avgPriceFromTo);
+
+        return stats;
 
     }
 
