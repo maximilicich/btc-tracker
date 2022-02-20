@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -48,41 +49,13 @@ public class BitcoinController extends AbstractRestHandler {
     @ResponseBody
     ResponseEntity getBitcoinPrices(@RequestParam(required = false) String ts) {
 
-        if (ts == null) {
-            return getBitcoinPricesAll();
-        }
-        else {
-            return getBitcoinPricesAt(ts);
-        }
-    }
-
-    private ResponseEntity getBitcoinPricesAll() {
-
-        Iterable<BitcoinPrice> iterable = this.bitcoinService.getAllBitcoins();
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(StreamSupport.stream(iterable.spliterator(), false)
-                        .collect(Collectors.toList()));
-
-    }
-
-    private ResponseEntity getBitcoinPricesAt(String ts) {
-
-        Date dts = this.stringToDate(ts);
-        log.debug(String.format("getBitcoinPriceAt(string: %s -> date: %s)", ts, dts));
-
-        Iterable<BitcoinPrice> iterable = this.bitcoinService.getAllBitcoins();
-
-        BitcoinPrice result =
-                StreamSupport.stream(iterable.spliterator(), false)
-                        .filter(p -> ! p.getTs().after(dts))
-                        .reduce((a, b) -> b)   // reduce((a,b)->b) devuelve el ultimo elemento
-                        .orElseThrow(() -> new ResourceNotFoundException(
-                                String.format("No hay precio de bitcoin registrado para el timestamp: %s", ts)));
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(result);
-
+        /*
+        TODO pensar una mejor alternativa REST para esto
+        Si se recibe ts, devuelve un Price, pero si no se recibe devuelve la lista completa
+        tal vez se pueda pensar en dos endpoints diferentes para evitar la ambiguedad del tipo de respuesta
+        a partir del mismo uri path
+         */
+        return (ts == null) ? getBitcoinPricesAll() : getBitcoinPriceAt(ts);
     }
 
 
@@ -99,7 +72,7 @@ public class BitcoinController extends AbstractRestHandler {
         Date dFrom = stringToDate(from);
         Date dTo = stringToDate(to);
 
-        Iterable<BitcoinPrice> iterable = this.bitcoinService.getAllBitcoins();
+        Iterable<BitcoinPrice> iterable = this.bitcoinService.getAllBitcoinPrices();
 
         Double result =
                 StreamSupport.stream(iterable.spliterator(), false)
@@ -114,11 +87,35 @@ public class BitcoinController extends AbstractRestHandler {
 
     }
 
+    private ResponseEntity getBitcoinPricesAll() {
+
+        List<BitcoinPrice> allBitcoinPrices = this.bitcoinService.getAllBitcoinPrices();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(allBitcoinPrices);
+
+    }
+
+    private ResponseEntity getBitcoinPriceAt(String ts) {
+
+        Date dts = this.stringToDate(ts);
+        log.debug(String.format("getBitcoinPriceAt(string: %s -> date: %s)", ts, dts));
+
+        BitcoinPrice result = this.bitcoinService.getBitcoinPriceAt(dts)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("No hay precio de bitcoin registrado para el timestamp: %s", ts)));
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(result);
+
+    }
+
     /**
-     * TODO Por el momento, para simplificar, tomamos los requestParms de timestamp como Strings
+     * Por el momento, para simplificar, tomamos los requestParms de timestamp como Strings
      * y los convertimos de este modo a Date
      * En realidad, sería mejor luego que el datatype de los requestParms sea directamente java.util.Date
      * con el @DateTimeFormat(pattern="yyyy-MM-dd-HH...")
+     * TODO evaluar posibilidad de tener @RequestParams de tipo Date
      *
      * @param ts
      * @return

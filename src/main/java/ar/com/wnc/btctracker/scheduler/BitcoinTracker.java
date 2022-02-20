@@ -51,7 +51,7 @@ public class BitcoinTracker {
         Gson gson = new Gson();
         CriptoPriceResponse criptoPriceResponse = gson.fromJson(jsonResponse, CriptoPriceResponse.class);
         log.info(String.valueOf(criptoPriceResponse));
-        bitcoinService.createBitcoin(new BitcoinPrice(
+        bitcoinService.createBitcoinPrice(new BitcoinPrice(
                 criptoPriceResponse.getCurr2(),
                 Double.valueOf(criptoPriceResponse.getLprice())));
 
