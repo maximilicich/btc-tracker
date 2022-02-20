@@ -1,0 +1,66 @@
+### This is the main way to configure the application (other than annotations).
+### This file is in Yaml format but you can also configure spring boot using the traditional
+### Java properties file format. 
+
+spring.jmx:
+   enabled: false
+
+spring.datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:bootexample;MODE=MySQL
+
+server:
+  port: 8090
+
+#todo: make sure to always enable security in production
+security:
+  basic:
+    enabled: false
+
+#management endpoints on a separate port
+management:
+  port: 8091
+  security:
+    enabled: false # management port is internal only. no need to secure it.
+
+#default project info followed by actual injected pom-specified values.
+project:
+  name: wnc-btc-tracker
+  version: 0.1
+  description: WNC Bitcoin Tracker - Consulta precio BTC en Servicio Externo en forma recurrente y expone info estadistica via API REST
+info:
+  build:
+    artifact: ${project.artifactId}
+    name: ${project.name}
+    description: ${project.description}
+    version: ${project.version}
+
+dummy.service:
+  name: 'default profile:'
+
+bitcointracker:
+  fixedDelay: 10000
+  url: 'https://cex.io/api/last_price/BTC/USD'
+  timestampFormat: 'yyyyMMddHHmmss'
+
+---
+spring:
+  profiles: test
+  h2:
+    console:
+      enabled: true
+
+spring.jpa:
+    hibernate.ddl-auto: create-drop
+
+dummy.service:
+  name: 'test profile:'
+
+bitcointracker:
+  fixedDelay: 10000
+  url: 'https://cex.io/api/last_price/BTC/USD'
+  timestampFormat: 'yyyyMMddHHmmss'
+
+logging:
+  file: btc_tracker.log
+  org.hibernate: INFO
