@@ -21,4 +21,5 @@ public class BitcoinPriceStats {
     Date timestampTo;
     Double avgPrice;
     Double maxPrice;
+    Double percentPriceDiff;
 }

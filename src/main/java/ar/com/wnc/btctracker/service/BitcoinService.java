@@ -3,6 +3,7 @@ package ar.com.wnc.btctracker.service;
 import ar.com.wnc.btctracker.dao.jpa.BitcoinRepository;
 import ar.com.wnc.btctracker.domain.BitcoinPrice;
 import ar.com.wnc.btctracker.domain.BitcoinPriceStats;
+import ar.com.wnc.btctracker.util.MathUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,9 +63,12 @@ public class BitcoinService {
         stats.setTimestampTo(to);
         stats.setMaxPrice(maxPrice);
         stats.setAvgPrice(avgPriceFromTo);
+        stats.setPercentPriceDiff(MathUtils.calculatePercentDiff(maxPrice, avgPriceFromTo));
 
         return stats;
 
     }
+
+
 
 }
