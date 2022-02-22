@@ -90,6 +90,8 @@ public class BitcoinController extends AbstractRestHandler {
         Date dts = this.stringToDate(ts);
         log.debug(String.format("getBitcoinPriceAt(string: %s -> date: %s)", ts, dts));
 
+        avoidFutureDates(dts);
+
         BitcoinPrice result = this.bitcoinService.getBitcoinPriceAt(dts)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("No hay precio de bitcoin registrado para el timestamp: %s", ts)));
@@ -122,6 +124,17 @@ public class BitcoinController extends AbstractRestHandler {
                     String.format("No se pudo convertir a timestamp '%s' (formato esperado: '%s')", ts, timestampFormat),
                     e);
         }
+    }
+
+    private void avoidFutureDates(Date date) {
+
+        Date now = new Date();
+        if (date.after(now)) {
+            throw new DataFormatException(
+                    String.format("El timestamp ingresado (%s) no puede ser posterior a la fecha/hora actual.",
+                            new SimpleDateFormat(this.timestampFormat).format(date)));
+        }
+
     }
 
 }
