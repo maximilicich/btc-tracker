@@ -17,12 +17,6 @@ security:
   basic:
     enabled: false
 
-#management endpoints on a separate port
-management:
-  port: 8091
-  security:
-    enabled: false # management port is internal only. no need to secure it.
-
 #default project info followed by actual injected pom-specified values.
 project:
   name: wnc-btc-tracker
