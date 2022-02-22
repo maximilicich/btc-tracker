@@ -1,5 +1,6 @@
 package ar.com.wnc.btctracker.domain;
 
+import ar.com.wnc.btctracker.util.MathUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -17,9 +18,13 @@ import java.util.Date;
 @Getter
 @Setter
 public class BitcoinPriceStats {
-    Date timestampFrom;
-    Date timestampTo;
-    Double avgPrice;
-    Double maxPrice;
-    Double percentPriceDiff;
+
+    private Date timestampFrom;
+    private Date timestampTo;
+    private Double maxPrice;
+    private Double avgPrice;
+
+    public Double getPercentPriceDiff() {
+        return MathUtils.calculatePercentDiff(this.maxPrice, this.avgPrice);
+    }
 }
