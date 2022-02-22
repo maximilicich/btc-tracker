@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "bitcoin")
+@Table(name = "bitcoin_price")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BitcoinPrice {
@@ -33,7 +33,7 @@ public class BitcoinPrice {
 
     @Column()
     @CreationTimestamp
-    Date ts;
+    private Date ts;
 
     public BitcoinPrice() {
     }
@@ -42,6 +42,12 @@ public class BitcoinPrice {
         this.currency = currency;
         this.price = price;
         this.ts = new Date();
+    }
+
+    public BitcoinPrice(String currency, Double price, Date date) {
+        this.currency = currency;
+        this.price = price;
+        this.ts = date;
     }
 
 }
