@@ -27,7 +27,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/bitcoin")
-@Api(tags = {"bitcoins"})
+@Api(tags = {"bitcoin"})
 @Slf4j
 public class BitcoinController extends AbstractRestHandler {
 
@@ -42,7 +42,11 @@ public class BitcoinController extends AbstractRestHandler {
             method = RequestMethod.GET,
             produces = {"application/json", "application/xml"})
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get a list of all bitcoins.", notes = "Notas adicionales")
+    @ApiOperation(value = "Consulta precios BTC (lista completa o un timestamp dado)",
+            notes = "Por default consulta la lista completa de precios registrados. Con el query parm opcional ts" +
+                    " se puede consultar el precio para un timestamp determinado. " +
+                    "En caso de no haber precio registrado para ese timestamp exacto, el precio brindado será el " +
+                    " inmediato anterior registrado.")
     public
     @ResponseBody
     ResponseEntity getBitcoinPrices(@RequestParam(required = false) String ts) {
@@ -61,7 +65,11 @@ public class BitcoinController extends AbstractRestHandler {
             method = RequestMethod.GET,
             produces = {"application/json", "application/xml"})
     @ResponseStatus(HttpStatus.OK)
-    @ApiOperation(value = "Get a list of all bitcoins.", notes = "Notas adicionales")
+    @ApiOperation(value = "Consulta estadisticas de precios BTC para un periodo dado",
+            notes = "El periodo a consultar esta dado por los query parms obligatorios ts_from y ts_to. " +
+                    "La información estadistica brindada es el precio promedio entre ambos Timestamps " +
+                    "así como la diferencia porcentual entre " +
+                    "ese valor promedio y el valor máximo almacenado para toda la serie temporal disponible.")
     public
     @ResponseBody
     ResponseEntity getBitcoinStats(@RequestParam(name="ts_from") String from,
@@ -71,11 +79,17 @@ public class BitcoinController extends AbstractRestHandler {
         Date dFrom = stringToDate(from);
         Date dTo = stringToDate(to);
 
+        validateTimestampRange(dFrom, dTo);
+
         return ResponseEntity.status(HttpStatus.OK)
                 .body(this.bitcoinService.getBitcoinPriceStats(dFrom, dTo));
 
     }
 
+    /**
+     *
+     * @return
+     */
     private ResponseEntity getBitcoinPricesAll() {
 
         List<BitcoinPrice> allBitcoinPrices = this.bitcoinService.getAllBitcoinPrices();
@@ -84,6 +98,7 @@ public class BitcoinController extends AbstractRestHandler {
                 .body(allBitcoinPrices);
 
     }
+
 
     private ResponseEntity getBitcoinPriceAt(String ts) {
 
@@ -101,6 +116,10 @@ public class BitcoinController extends AbstractRestHandler {
 
     }
 
+    private DateFormat buildDateFormat() {
+        return new SimpleDateFormat(this.timestampFormat);
+    }
+
     /**
      * Por el momento, para simplificar, tomamos los requestParms de timestamp como Strings
      * y los convertimos de este modo a Date
@@ -113,12 +132,10 @@ public class BitcoinController extends AbstractRestHandler {
      */
     private Date stringToDate(String ts) {
 
-        log.debug(String.format("stringToDate: timestampFormat is '%s'", timestampFormat));
-
-        DateFormat df = new SimpleDateFormat(timestampFormat);
+        log.debug(String.format("stringToDate(%s): timestampFormat is '%s'", ts, this.timestampFormat));
 
         try {
-            return df.parse(ts);
+            return buildDateFormat().parse(ts);
         } catch (ParseException e) {
             throw new DataFormatException(
                     String.format("No se pudo convertir a timestamp '%s' (formato esperado: '%s')", ts, timestampFormat),
@@ -126,15 +143,35 @@ public class BitcoinController extends AbstractRestHandler {
         }
     }
 
+    /**
+     * Verifica que la fecha date no sea futura, caso contrario lanza DataFormatException (400 BAD REQUEST)
+     * @param date
+     */
     private void avoidFutureDates(Date date) {
 
         Date now = new Date();
         if (date.after(now)) {
             throw new DataFormatException(
                     String.format("El timestamp ingresado (%s) no puede ser posterior a la fecha/hora actual.",
-                            new SimpleDateFormat(this.timestampFormat).format(date)));
+                            buildDateFormat().format(date)));
         }
 
+    }
+
+    /**
+     * Valida que el periodo definido por dos dates sea valido (d1 <= d2)
+     * Caso contrario lanza DataFormatException (400 BAD REQUEST)
+     *
+     * @param d1
+     * @param d2
+     */
+    private void validateTimestampRange(Date d1, Date d2) {
+        if (d1.after(d2)) {
+            throw new DataFormatException(
+                    String.format("El periodo definido por los timestamps ingresados (%s-%s) es inválido ",
+                            buildDateFormat().format(d1),
+                            buildDateFormat().format(d2)));
+        }
     }
 
 }

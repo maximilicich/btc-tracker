@@ -2,6 +2,7 @@ package ar.com.wnc.btctracker.api.rest.docs;
 
 import com.google.common.base.Predicates;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @ComponentScan("ar.com.wnc.btctracker.api.rest")
 public class SwaggerConfig {
 
+    @Value("${project.description}")
+    private String projectDescription;
 
     @Bean
     public Docket api() {
@@ -33,15 +36,13 @@ public class SwaggerConfig {
     
 
     private ApiInfo apiInfo() {
-        String description = "REST example";
         return new ApiInfoBuilder()
-                .title("REST example")
-                .description(description)
+                .title("WNC Bitcoin Tracker REST API")
+                .description(this.projectDescription)
                 .termsOfServiceUrl("github")
-                .license("Siamak")
+                .license("WNC")
                 .licenseUrl("")
                 .version("1.0")
- //               .contact(new Contact("siamak"))
                 .build();
     }
 
