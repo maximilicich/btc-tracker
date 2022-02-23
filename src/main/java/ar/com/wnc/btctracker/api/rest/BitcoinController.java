@@ -21,9 +21,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-/*
- * Demonstrates how to set up RESTful API endpoints using Spring MVC
- */
 
 @RestController
 @RequestMapping(value = "/api/v1/bitcoin")

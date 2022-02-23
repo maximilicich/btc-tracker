@@ -13,9 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/*
- * Sample service to demonstrate what the API would use to get things done
- */
+
 @Slf4j
 @Service
 public class BitcoinService {

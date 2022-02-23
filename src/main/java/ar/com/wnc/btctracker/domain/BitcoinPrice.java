@@ -2,7 +2,7 @@ package ar.com.wnc.btctracker.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+//import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -10,9 +10,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
-/*
- * a simple domain entity doubling as a DTO
- */
+
 @Getter
 @Setter
 @Entity

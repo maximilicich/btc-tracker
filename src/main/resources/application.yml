@@ -1,6 +1,6 @@
-### This is the main way to configure the application (other than annotations).
-### This file is in Yaml format but you can also configure spring boot using the traditional
-### Java properties file format. 
+###
+### wnc-btc-tracker config file (YAML format)
+###
 
 spring.jmx:
    enabled: false
@@ -12,7 +12,7 @@ spring.datasource:
 server:
   port: 8090
 
-#todo: make sure to always enable security in production
+#todo: asegurar de habilitar la seguridad en profile default
 security:
   basic:
     enabled: false
@@ -28,9 +28,6 @@ info:
     name: ${project.name}
     description: ${project.description}
     version: ${project.version}
-
-dummy.service:
-  name: 'default profile:'
 
 bitcointracker:
   fixedDelay: 10000
@@ -49,13 +46,15 @@ spring:
 spring.jpa:
     hibernate.ddl-auto: create-drop
 
-dummy.service:
-  name: 'test profile:'
-
 bitcointracker:
   fixedDelay: 10000
   url: 'https://cex.io/api/last_price/BTC/USD'
   timestampFormat: 'yyyyMMddHHmmss'
+
+#En profile test no es necesaria la seguridad
+security:
+  basic:
+    enabled: false
 
 logging:
   file: btc_tracker.log
