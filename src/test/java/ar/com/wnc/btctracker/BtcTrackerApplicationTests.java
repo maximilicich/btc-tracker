@@ -55,6 +55,12 @@ class BtcTrackerApplicationTests {
 	}
 
 	@Test
+	void testGetAllPrices() {
+
+		assertEquals(bitcoinService.getAllBitcoinPrices().size(), 4);
+	}
+
+	@Test
 	void testMaxAndAvgPrice() throws ParseException {
 
 		BitcoinPriceStats stats = bitcoinService.getBitcoinPriceStats(
