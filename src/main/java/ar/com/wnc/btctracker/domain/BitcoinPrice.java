@@ -32,7 +32,7 @@ public class BitcoinPrice {
     private Double price;
 
     @Column()
-    @CreationTimestamp
+    // @CreationTimestamp
     private Date ts;
 
     public BitcoinPrice() {
