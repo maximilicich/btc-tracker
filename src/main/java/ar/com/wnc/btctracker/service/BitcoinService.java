@@ -49,8 +49,8 @@ public class BitcoinService {
         return new BitcoinPriceStats(
                 from,
                 to,
-                stats.getMax(),
-                stats.getAverage());
+                stats.getCount() > 0 ? stats.getMax() : Double.NaN,
+                stats.getCount() > 0 ? stats.getAverage() : Double.NaN);
 
     }
 

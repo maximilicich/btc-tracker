@@ -19,8 +19,8 @@ import java.util.Date;
 @Setter
 public class BitcoinPriceStats {
 
-    private Date timestampFrom;
-    private Date timestampTo;
+    private Date tsFrom;
+    private Date tsTo;
     private Double maxPrice;
     private Double avgPrice;
 
