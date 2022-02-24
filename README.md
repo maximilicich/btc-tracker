@@ -227,6 +227,19 @@ Cuando se apaga la ejecución de la aplicación, lógicamente los datos persisti
 <br/>
 <br/>
 
+### Pruebas Unitarias con Spring Test + JUnit
+
+Las Pruebas Unitarias son insuficientes. 
+
+Por el momento solo se cuenta con un módulo de Spring Unit Test 
+```src/test/java/ar/com/wnc/btctracker/BtcTrackerApplicationTests.java``` 
+El cual realiza testing del Service Layer para obtención y filtrado de datos persistidos 
+(los metodos que utilizan la Stream API)
+Faltan otros módulos de Test Unitario, como el Testing del REST API Layer (el web Controller), 
+o el Proxy Service (la consulta a la API externa).
+
+
+
 ### Ejecución con spring.profiles.active=test para acceso a Consola SQL H2
 Si se ejecuta la aplicación con el profile de configuración "test", de este modo:
 ```
