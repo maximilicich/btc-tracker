@@ -198,6 +198,54 @@ Reponse:
 
 ## Consideraciones técnicas adicionales
 
+### Archivo de Configuración de la Aplicación
+Los parámetros de configuración de la aplicación se encuentran en el archivo de configuración
+```src/main/resources/application.yml```
+
+* URL API Externa para consulta de Precios Bitcoin
+```shell
+bitcointracker:
+  url: 'https://cex.io/api/last_price/BTC/USD'
+```
+* Cantidad de milisegundos entre requests a API Externa para el Scheduler Delay
+```shell
+bitcointracker:
+  fixedDelay: 10000
+```
+* Formato del timestamp para los Request Params de la API REST
+```shell
+bitcointracker:
+  timestampFormat: 'yyyyMMddHHmmss'
+```
+<br/>
+
+
+### Volatilidad de los datos
+
+La persistencia de datos se realiza en H2 in-memory database. 
+Cuando se apaga la ejecución de la aplicación, lógicamente los datos persistidos se pierden.
+<br/>
+<br/>
+
+### Ejecución con spring.profiles.active=test para acceso a Consola SQL H2
+Si se ejecuta la aplicación con el profile de configuración "test", de este modo:
+```
+    java -jar -Dspring.profiles.active=test target/btc-tracker-0.0.1-SNAPSHOT.jar
+```
+o bien asi:
+```
+    mvn spring-boot:run -Dspring-boot.run.profiles=test
+```
+
+La aplicación permite el acceso a la CONSOLA H2 para acceder en forma directa por SQL 
+a la información almacenada en la Base de Datos
+
+* Consola H2 : http://localhost:8090/h2-console
+  * JDBC URL: jdbc:h2:mem:btctracker
+  * User: sa
+  * Password (blank)
+
+<br/>
 
 
 **Consultas y Sugerencias: maximiliano.milicich@gmail.com**
